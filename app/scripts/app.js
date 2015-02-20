@@ -19,6 +19,7 @@ TODO:
 * leverage rel attributes of links
 * implement paging (use properties/srn:paging)
 * support actions
+* entities of type assets/asset show the original rendition instead of a thumbnail
 
 
 "rel" attribute mapping:
