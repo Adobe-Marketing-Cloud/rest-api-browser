@@ -22,8 +22,7 @@
           },
           'browser': {
             controller: 'BrowserController',
-            controllerAs: 'browser',
-            templateUrl: 'views/browser.html'
+            controllerAs: 'browser'
           }
         }
       });
