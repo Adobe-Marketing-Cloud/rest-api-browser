@@ -8,8 +8,13 @@ Start an AEM 6.1 instance at `http://localhost:4502`
 
 Run the following commands:
 
+    # install grunt command (if not yet installed)
+    npm install -g grunt-cli
+    
+    # install all required dependencies
     npm install
-    bower install
+    
+    # run the app on a grunt's built-in server
     grunt serve
     
 A browser should automatically open, showing `http://localhost:9000/#/browser/assets`

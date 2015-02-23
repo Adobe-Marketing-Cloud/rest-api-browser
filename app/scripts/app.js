@@ -1,16 +1,26 @@
 'use strict';
 
-/**
- * @ngdoc overview
- * @name yeomanApproachApp
- * @description
- * # yeomanApproachApp
- *
- * Main module of the application.
- */
-angular
-  .module('assetBrowser', ['ui.router', 'ui.bootstrap']);
+require('angular');
+require('angular-ui-router');
+require('angular-bootstrap-npm');
 
+angular
+  .module('assetBrowser', ['ui.router', 'ui.bootstrap'])
+  //.config(function($httpProvider) {
+  //  //Enable cross domain calls
+  //  $httpProvider.defaults.useXDomain = true;
+  //  //$httpProvider.defaults.headers.common.Authorization = 'Basic YWRtaW46YWRtaW4=';
+  //
+  //  //Remove the header used to identify ajax call  that would prevent CORS from working
+  //  delete $httpProvider.defaults.headers.common['X-Requested-With'];
+  //})
+;
+
+
+require('./apiService');
+require('./routing');
+require('./BreadcrumbController');
+require('./BrowserController');
 
 /*
 

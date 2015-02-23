@@ -19,23 +19,29 @@ module.exports = function (grunt) {
 
   // Define the configuration for all the tasks
   grunt.initConfig({
+    browserify: {
+      js: {
+        // A single entry point for our app
+        src: 'app/scripts/app.js',
+        // Compile to a single file to add a script tag for in your HTML
+        dest: '.tmp/scripts/app.js',
+
+        options: {
+
+            debug: true
+
+        }
+      }
+    },
 
     // Watches files for changes and runs tasks based on the changed files
     watch: {
-      bower: {
-        files: ['bower.json'],
-        tasks: ['wiredep']
-      },
       js: {
         files: ['app/scripts/{,*/}*.js'],
-        tasks: ['newer:jshint:all', 'wiredep'],
+        tasks: ['newer:jshint:all', 'browserify'],
         options: {
           livereload: '<%= connect.options.livereload %>'
         }
-      },
-      jsTest: {
-        files: ['test/spec/{,*/}*.js'],
-        tasks: ['newer:jshint:test', 'karma']
       },
       styles: {
         files: ['app/styles/{,*/}*.css'],
@@ -51,6 +57,7 @@ module.exports = function (grunt) {
         files: [
           'app/{,*/}*.html',
           '.tmp/styles/{,*/}*.css',
+          '.tmp/scripts/{,*/}*.js',
           'app/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}'
         ]
       }
@@ -81,8 +88,8 @@ module.exports = function (grunt) {
               proxyUtils.proxyRequest,
               connect.static('.tmp'),
               connect().use(
-                '/bower_components',
-                connect.static('./bower_components')
+                '/node_modules',
+                connect.static('./node_modules')
               ),
               connect().use(
                 '/app/styles',
@@ -177,145 +184,22 @@ module.exports = function (grunt) {
         }]
       }
     },
-
-    // Automatically inject Bower components into the app
-    wiredep: {
-      app: {
-        src: ['app/index.html'],
-        ignorePath:  /\.\.\//,
-        exclude: [ '.+?/bootstrap(\.min)?\.js$' ]
-      },
-      test: {
-        devDependencies: true,
-        src: '<%= karma.unit.configFile %>',
-        ignorePath:  /\.\.\//,
-        fileTypes:{
-          js: {
-            block: /(([\s\t]*)\/{2}\s*?bower:\s*?(\S*))(\n|\r|.)*?(\/{2}\s*endbower)/gi,
-            detect: {
-              js: /'(.*\.js)'/gi
-            },
-            replace: {
-              js: '\'{{filePath}}\','
-            }
-          }
-        }
-      }
-    },
-
-    // Renames files for browser caching purposes
-    filerev: {
-      dist: {
-        src: [
-          'dist/scripts/{,*/}*.js',
-          'dist/styles/{,*/}*.css',
-          'dist/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}',
-          'dist/styles/fonts/*'
-        ]
-      }
-    },
-
-    // Reads HTML for usemin blocks to enable smart builds that automatically
-    // concat, minify and revision files. Creates configurations in memory so
-    // additional tasks can operate on them
-    useminPrepare: {
-      html: 'app/index.html',
-      options: {
-        dest: 'dist',
-        flow: {
-          html: {
-            steps: {
-              js: ['concat', 'uglifyjs'],
-              css: ['cssmin']
-            },
-            post: {}
-          }
-        }
-      }
-    },
-
-    // Performs rewrites based on filerev and the useminPrepare configuration
-    usemin: {
-      html: ['dist/{,*/}*.html'],
-      css: ['dist/styles/{,*/}*.css'],
-      options: {
-        assetsDirs: [
-          'dist',
-          'dist/images',
-          'dist/styles'
-        ]
-      }
-    },
-
-    // The following *-min tasks will produce minified files in the dist folder
-    // By default, your `index.html`'s <!-- Usemin block --> will take care of
-    // minification. These next options are pre-configured if you do not wish
-    // to use the Usemin blocks.
-    // cssmin: {
-    //   dist: {
-    //     files: {
-    //       'dist/styles/main.css': [
-    //         '.tmp/styles/{,*/}*.css'
-    //       ]
-    //     }
-    //   }
-    // },
-    // uglify: {
-    //   dist: {
-    //     files: {
-    //       'dist/scripts/scripts.js': [
-    //         'dist/scripts/scripts.js'
-    //       ]
-    //     }
-    //   }
-    // },
-    concat: {
-       dist: {}
-    },
-
-    imagemin: {
-      dist: {
-        files: [{
-          expand: true,
-          cwd: 'app/images',
-          src: '{,*/}*.{png,jpg,jpeg,gif}',
-          dest: 'dist/images'
-        }]
-      }
-    },
-
-    svgmin: {
-      dist: {
-        files: [{
-          expand: true,
-          cwd: 'app/images',
-          src: '{,*/}*.svg',
-          dest: 'dist/images'
-        }]
-      }
-    },
-
-    htmlmin: {
-      dist: {
-        options: {
-          collapseWhitespace: true,
-          conservativeCollapse: true,
-          collapseBooleanAttributes: true,
-          removeCommentsFromCDATA: true,
-          removeOptionalTags: true
-        },
-        files: [{
-          expand: true,
-          cwd: 'dist',
-          src: ['*.html', 'views/{,*/}*.html'],
-          dest: 'dist'
-        }]
-      }
+    uglify: {
+       dist: {
+         files: {
+           'dist/scripts/app.js': [
+             'dist/scripts/app.js'
+           ]
+         }
+       }
     },
 
     // ng-annotate tries to make the code safe for minification automatically
     // by using the Angular long form for dependency injection.
     ngAnnotate: {
+      options: {
+        singleQuotes: true
+      },
       dist: {
         files: [{
           expand: true,
@@ -354,6 +238,11 @@ module.exports = function (grunt) {
           cwd: '.tmp/images',
           dest: 'dist/images',
           src: ['generated/*']
+        }, {
+          expand: true,
+          cwd: '.tmp/scripts',
+          dest: 'dist/scripts',
+          src: ['*.js']
         }]
       },
       styles: {
@@ -373,9 +262,7 @@ module.exports = function (grunt) {
         'copy:styles'
       ],
       dist: [
-        'copy:styles',
-        'imagemin',
-        'svgmin'
+        'copy:styles'
       ]
     },
 
@@ -396,11 +283,9 @@ module.exports = function (grunt) {
 
     grunt.task.run([
       'clean:server',
-      'wiredep',
-      'useminPrepare',
+      'browserify',
       'configureProxies',
       'concurrent:server',
-      //'autoprefixer:server',
       'connect:livereload',
       'watch'
     ]);
@@ -413,28 +298,17 @@ module.exports = function (grunt) {
 
   grunt.registerTask('test', [
     'clean:server',
-    'wiredep',
+    'browserify',
     'concurrent:test',
-    'autoprefixer',
-    'connect:test',
-    'karma'
+    'connect:test'
   ]);
 
   grunt.registerTask('build', [
     'clean:dist',
-    'wiredep',
-    'useminPrepare',
+    'browserify',
+    'ngAnnotate:dist',
     'concurrent:dist',
-    'autoprefixer',
-    'concat',
-    'ngAnnotate',
-    'copy:dist',
-    'cdnify',
-    'cssmin',
-    'uglify',
-    'filerev',
-    'usemin',
-    'htmlmin'
+    'copy:dist'
   ]);
 
   grunt.registerTask('default', [
