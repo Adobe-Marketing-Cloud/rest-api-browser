@@ -1,8 +1,8 @@
 'use strict';
 
-require('angular');
-require('angular-ui-router');
-require('angular-bootstrap-npm');
+//require('angular');
+//require('angular-ui-router');
+//require('angular-bootstrap-npm');
 
 angular
   .module('assetBrowser', ['ui.router', 'ui.bootstrap'])
@@ -16,11 +16,10 @@ angular
   //})
 ;
 
-
-require('./apiService');
-require('./routing');
-require('./BreadcrumbController');
-require('./BrowserController');
+//require('./apiService');
+//require('./routing');
+//require('./BreadcrumbController');
+//require('./BrowserController');
 
 /*
 
