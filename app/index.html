@@ -20,7 +20,7 @@
         <div class="container-fluid">
           <div class="row">
             <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3" ng-repeat="asset in browser.assets">
-              <div class="thumbnail" style="height: 200px; overflow: hidden;">
+              <div class="thumbnail">
                 <div class="caption">
                   <span ng-show="{{asset.isFolder}}" title="this is a folder" class="glyphicon glyphicon-folder-open" aria-hidden="true">&nbsp;</span>
                   <span ng-hide="{{asset.isFolder}}" title="this is an image" class="glyphicon glyphicon-picture" aria-hidden="true">&nbsp;</span>
@@ -28,7 +28,9 @@
                     {{asset.name}}
                   </a>
                 </div>
-                <img ng-hide="{{!asset.thumbnailUrl}}" ng-src="{{asset.thumbnailUrl}}" alt="{{asset.name}}">
+                <div class="image">
+                  <img ng-hide="{{!asset.thumbnailUrl}}" ng-src="{{asset.thumbnailUrl}}" alt="{{asset.name}}">
+                </div>
               </div>
             </div>
           </div>

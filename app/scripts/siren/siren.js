@@ -11,10 +11,10 @@ module.exports.entity = entity;
 function link(sirenObject, rel) {
   var results = [];
   var links = sirenObject.links;
-  console.log('link', links, rel);
+  //console.log('link', links, rel);
   for (var i = 0; i <  links.length; i++) {
     if (links[i].rel.indexOf(rel) > -1) {
-      console.log('found link', links[i]);
+      //console.log('found link', links[i]);
       results.push(links[i]);
     }
   }
@@ -23,11 +23,11 @@ function link(sirenObject, rel) {
 
 function entity(sirenObject, name) {
   var results = [];
-  console.log('entity', sirenObject, name);
+  //console.log('entity', sirenObject, name);
   if (sirenObject.entities) {
     for (var i = 0; i < sirenObject.entities.length; i++) {
       if (sirenObject.entities[i].properties.name === name) {
-        console.log('found entity', sirenObject.entities[i]);
+        //console.log('found entity', sirenObject.entities[i]);
         results.push(sirenObject.entities[i]);
       }
     }

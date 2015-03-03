@@ -20,7 +20,7 @@ function AssetAPIProvider($http, $q) {
 
   function resolveUrl(startUrl, pathSegments) {
     var deferred = $q.defer();
-    console.log('resolveUrl', startUrl, pathSegments);
+    // console.log('resolveUrl', startUrl, pathSegments);
     remoteCall(startUrl).success(function(data) {
       if (pathSegments.length > 0) {
         var segment = pathSegments.shift();
@@ -75,11 +75,9 @@ function AssetAPIProvider($http, $q) {
     return remoteCall(asset.url)
       .success(function(data) {
         var thumbnail = siren.link(data, 'thumbnail');
-        if (thumbnail) {
-          asset.thumbnailUrl = thumbnail.href;
-        } else {
-          asset.thumbnailUrl = null;
-        }
+        var content = siren.link(data, 'content');
+          asset.thumbnailUrl = thumbnail ? thumbnail.href : null;
+          asset.contentUrl = content ? content.href : null;
       });
   }
 
