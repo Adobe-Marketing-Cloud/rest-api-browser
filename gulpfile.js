@@ -17,7 +17,7 @@
  */
 
 var gulp = require('gulp');
-var del = require('del');
+var rimraf = require('gulp-rimraf');
 var connect = require('gulp-connect');
 var proxy = require('proxy-middleware');
 var sourcemaps = require('gulp-sourcemaps');
@@ -28,7 +28,8 @@ var concat = require('gulp-concat');
 
 
 gulp.task('clean', function (callback) {
-  del('./build', callback);
+  return gulp.src('build')
+    .pipe(rimraf());
 });
 
 gulp.task('copy-html', function () {
@@ -44,37 +45,27 @@ gulp.task('copy-css', function () {
     .pipe(connect.reload());
 });
 
-gulp.task('process-js', jsTask({
-  src: ['app/**/*.module.js', 'app/**/*.js'],
-  dest: './build/js',
-  require: [
-    //'angular',
-    //'angular-ui-router',
-    //'angular-bootstrap-npm'
-  ]
+gulp.task('process-js', browserifyTask({
+    src: './app/scripts/asset-browser.module.js',
+    dest: './build/js',
+    filename: 'asset-browser.js',
+    require: []
 }));
 
-gulp.task('vendor-js',
-  jsTask({
-    src: [
-      'node_modules/angular/angular.js',
-      'node_modules/angular-ui-router/release/angular-ui-router.js',
-      'node_modules/angular-bootstrap-npm/dist/angular-bootstrap.js'
-    ],
-    dest: './build/js/vendor',
-    require: []
-  })
+function browserifyTask(config) {
+  var browserify = require('browserify');
+  var source = require('vinyl-source-stream');
 
-
-  //var browserify = require('browserify');
-  //var source = require('vinyl-source-stream');
-  //browserify()
-  //  .require('angular', {expose: 'angular'})
-  //  .require('angular-ui-router', 'angular-bootstrap-npm')
-  //  .bundle()
-  //  .pipe(source('angular.js'))
-  //  .pipe(gulp.dest('./build/js/vendor'));
-);
+  function bundle() {
+    var bundler = browserify({ debug: true });
+    bundler.add(config.src);
+    bundler.transform('browserify-ngannotate');
+    bundler.bundle()
+      .pipe(source(config.filename))
+      .pipe(gulp.dest(config.dest));
+  }
+  return bundle;
+}
 
 gulp.task('copy-bootstrap', function () {
   return gulp.src('./node_modules/bootstrap/dist/**/*', {
@@ -99,7 +90,18 @@ gulp.task('webserver', function () {
         headers: {
           'Authorization': 'Basic YWRtaW46YWRtaW4='
         }
-      })];
+      }),
+        proxy({
+          route: '/api.json',
+          preserveHost: true,
+          hostname: 'localhost',
+          port: 4502,
+          pathname: '/api.json',
+          headers: {
+            'Authorization': 'Basic YWRtaW46YWRtaW4='
+          }
+        })
+      ];
     }
   });
 });
@@ -111,16 +113,12 @@ gulp.task('watch', function () {
 });
 
 gulp.task('copy', ['copy-html', 'copy-css', 'copy-bootstrap']);
-gulp.task('build', ['copy', 'vendor-js', 'process-js']);
+gulp.task('build', ['copy', 'process-js']);
 gulp.task('serve', ['build', 'watch', 'webserver']);
 gulp.task('default', ['build']);
 
 //gulp.task('process-js', function() {
-//  var browserified = transform(function(filename) {
-//    var b = browserify(filename);
-//    b.require(['angular', 'angular-ui-router', 'angular-bootstrap-npm']);
-//    return b.bundle();
-//  });
+
 //
 //  return gulp.src('app/scripts/app.js')
 //    .pipe(browserified)
@@ -129,24 +127,46 @@ gulp.task('default', ['build']);
 //});
 
 function jsTask(config) {
-  gulp.src(config.src)
-    .pipe(sourcemaps.init())
-    .pipe(concat('app.js'))
-    .pipe(ngAnnotate())
-    //.pipe(uglify())
-    //.pipe(rename({extname: ".min.js"})
-    .pipe(sourcemaps.write())
-    .pipe(gulp.dest(config.dest))
-    .pipe(connect.reload());
+  var browserify = require('browserify');
+  var transform = require('vinyl-transform');
+  var buffer = require('vinyl-buffer');
+  var bundler = browserify();
+  var browserified = transform(function(filename) {
+    console.log('stream ', arguments);
+    bundler.add(filename);
+    bundler.external(['angular', 'angular-ui-router', 'angular-bootstrap-npm', 'siren']);
+    return bundler.bundle();
+  });
+
+
+  function concatenate() {
+    return gulp.src(config.src)
+      .pipe(sourcemaps.init())
+      .pipe(concat(config.filename))
+      .pipe(ngAnnotate())
+      .pipe(browserified)
+      //.pipe(uglify())
+      //.pipe(rename({extname: ".min.js"})
+      .pipe(sourcemaps.write())
+      .pipe(gulp.dest(config.dest))
+      .pipe(connect.reload());
+  }
+  return concatenate;
 }
 
-function javascriptTask(config) {
-  //var watchify = require('watchify');
+function browserifyTask2(config) {
   var browserify = require('browserify');
   var through = require('through2');
 
   var browserifier = through.obj(function (file, enc, next) {
-    browserify(file.path, {debug: true})
+    var options = {
+      debug: true
+
+    };
+    browserify(file.path, options)
+
+
+    //browserify(file.path, {debug: true})
       .require(config.require)
       .bundle(function (err, res) {
         if (err) {
@@ -159,14 +179,14 @@ function javascriptTask(config) {
 
   function bundle() {
     return gulp.src(config.src)
-      .pipe(ngAnnotate())
+      //.pipe(ngAnnotate())
       .pipe(browserifier)
-      .pipe(sourcemaps.init({loadMaps: true})) // loads map from browserify file
+      //.pipe(sourcemaps.init({loadMaps: true})) // loads map from browserify file
       //.pipe(uglify())
       //.pipe(rename({extname: ".min.js"})
-      .pipe(sourcemaps.write('./')) // writes .map file
+      //.pipe(sourcemaps.write('./')) // writes .map file
       .pipe(gulp.dest(config.dest))
-      .pipe(connect.reload());
+      //.pipe(connect.reload());
   }
 
   return bundle;

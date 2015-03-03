@@ -1,7 +1,6 @@
 'use strict';
 
-angular.module('assetBrowser')
-  .config(routes);
+module.exports = routes;
 
 /* @ngInject */
 function routes($stateProvider, $urlRouterProvider) {

@@ -5,20 +5,16 @@
     <title></title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width">
-    <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
-    <!-- build:css(.) styles/vendor.css -->
-    <!-- bower:css -->
+
     <link rel="stylesheet" href="vendor/css/bootstrap.min.css" />
-    <!-- endbower -->
-    <!-- endbuild -->
-    <!-- build:css(.tmp) styles/main.css -->
     <link rel="stylesheet" href="css/main.css">
-    <!-- endbuild -->
   </head>
   <body ng-app="assetBrowser">
-    <ol ui-view="breadcrumb" class="breadcrumb">
-      <li ng-repeat="path in breadcrumb.paths"><a href="{{path.href}}">{{path.label}}</a></li>
-    </ol>
+    <div ui-view="breadcrumb" >
+      <ol class="breadcrumb">
+        <li ng-repeat="path in breadcrumb.paths"><a href="{{path.href}}">{{path.label}}</a></li>
+      </ol>
+    </div>
     <div ui-view="browser" class="panel panel-default">
       <div class="panel-body">
         <div class="container-fluid">
@@ -40,6 +36,7 @@
       </div>
     </div>
 
+    <!--
     <nav>
       <ul class="pagination">
         <li>
@@ -59,8 +56,8 @@
         </li>
       </ul>
     </nav>
+    -->
 
-    <script src="js/vendor/app.js"></script>
-    <script src="js/app.js"></script>
+    <script src="js/asset-browser.js"></script>
   </body>
 </html>

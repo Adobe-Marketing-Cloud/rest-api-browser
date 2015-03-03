@@ -1,17 +1,12 @@
 'use strict';
 
-angular.module('assetBrowser')
-  .factory('assetAPI', AssetAPIProvider);
+module.exports = AssetAPIProvider;
 
+/* @ngInject */
 function AssetAPIProvider($http, $q) {
 
-  // TODO: use API traversal instead of making assumptions on URL structure
-  var apiBaseUrl = 'http://localhost:9000/api/';
-
-  // TODO: chain calls to match path incl. path lookup
-  // instead of relying on a predictable URL structure
-  // TODO: consider entity caching to reduce number of
-  // roundtrips - maybe browser caching is good enough?
+  var entryUrl = 'http://localhost:9000/api.json';
+  var siren = require('./siren/siren.js');
 
   return {
     remoteCall: remoteCall,
@@ -19,15 +14,33 @@ function AssetAPIProvider($http, $q) {
     filterLinksByRel: filterLinksByRel
   };
 
-  function remoteCall(path) {
-    // TODO: use API traversal instead of making assumptions on URL structure
-    return $http.get(apiBaseUrl + path + '.json');
+  function remoteCall(url) {
+    return $http.get(url);
+  }
+
+  function resolveUrl(startUrl, pathSegments) {
+    var deferred = $q.defer();
+    console.log('resolveUrl', startUrl, pathSegments);
+    remoteCall(startUrl).success(function(data) {
+      if (pathSegments.length > 0) {
+        var segment = pathSegments.shift();
+        var link = (siren.link(data, segment) || siren.link(siren.entity(data, segment), 'self'));
+        resolveUrl(link.href, pathSegments)
+          .then(function(data) {
+            deferred.resolve(data);
+          })
+        ;
+      } else {
+        deferred.resolve(data);
+      }
+    });
+    return deferred.promise;
   }
 
   function getChildAssets(path) {
+
     var deferred = $q.defer();
-    remoteCall(path)
-      .success(function(data) {
+    resolveUrl(entryUrl, path.split('/')).then(function(data) {
         dataToAssets(data).then(function(assets) {
           deferred.resolve(assets);
         });
@@ -39,9 +52,9 @@ function AssetAPIProvider($http, $q) {
     var entities = data.entities;
     var assets = [];
     var promises = [];
-    var parentPath = hashLink(data.links[1].href);
+    var parentPath = hashLink(siren.link(data, 'parent').href);
     for (var i = 0; i < entities.length; i++) {
-      var href = entities[i].links[0].href;
+      var href = siren.link(entities[i], 'self').href;
       assets.push({
         name: entities[i].properties.name,
         isFolder: entities[i].class[0] === 'assets/folder',
@@ -59,10 +72,11 @@ function AssetAPIProvider($http, $q) {
   }
 
   function resolveThumbnail(asset) {
-    return $http.get(asset.url)
+    return remoteCall(asset.url)
       .success(function(data) {
-        if (data.links.length > 2) {
-          asset.thumbnailUrl = data.links[2].href;
+        var thumbnail = siren.link(data, 'thumbnail');
+        if (thumbnail) {
+          asset.thumbnailUrl = thumbnail.href;
         } else {
           asset.thumbnailUrl = null;
         }

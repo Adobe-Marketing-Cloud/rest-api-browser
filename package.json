@@ -9,6 +9,7 @@
   },
   "repository": {},
   "devDependencies": {
+    "browserify-ngannotate": "^0.7.1",
     "del": "^1.1.1",
     "grunt": "^0.4.5",
     "grunt-browserify": "^3.3.0",

@@ -1,8 +1,8 @@
 'use strict';
 
-angular.module('assetBrowser')
-  .controller('BrowserController', BrowserController);
+module.exports = BrowserController;
 
+/* @ngInject */
 function BrowserController(assets) {
   var vm = this;
   vm.assets = assets;

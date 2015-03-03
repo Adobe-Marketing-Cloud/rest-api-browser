@@ -1,8 +1,9 @@
 'use strict';
 
-angular.module('assetBrowser')
-  .controller('BreadcrumbController', BreadcrumbController);
 
+module.exports = BreadcrumbController;
+
+/* @ngInject */
 function BreadcrumbController(assets) {
   var vm = this;
   vm.paths = []; // TODO: parent is null exception if not empty

@@ -1,11 +1,25 @@
 'use strict';
 
-//require('angular');
-//require('angular-ui-router');
-//require('angular-bootstrap-npm');
+require('angular');
+require('angular-ui-router');
+require('angular-bootstrap-npm');
+
+var BreadcrumbController = require('./breadcrumb.ctrl.js');
+var BrowserController = require('./browser.ctrl.js');
+var RoutingConfig = require('./routing.js');
+var AssetAPIProvider = require('./api.service.js');
 
 angular
   .module('assetBrowser', ['ui.router', 'ui.bootstrap'])
+  .config(RoutingConfig)
+  .controller('BreadcrumbController', BreadcrumbController)
+  .controller('BrowserController', BrowserController)
+  .factory('assetAPI', AssetAPIProvider)
+;
+
+
+
+
   //.config(function($httpProvider) {
   //  //Enable cross domain calls
   //  $httpProvider.defaults.useXDomain = true;
@@ -14,7 +28,6 @@ angular
   //  //Remove the header used to identify ajax call  that would prevent CORS from working
   //  delete $httpProvider.defaults.headers.common['X-Requested-With'];
   //})
-;
 
 //require('./apiService');
 //require('./routing');
