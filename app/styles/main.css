@@ -3,6 +3,13 @@ body {
   padding: 1em;
 }
 
+.thumbnail > .buttons {
+  display: block;
+  margin: 12px auto 6px;
+  padding: 9px;
+  text-align: center;
+}
+
 .thumbnail .image {
   height: 150px;
   padding: 6px 9px 0px 9px;

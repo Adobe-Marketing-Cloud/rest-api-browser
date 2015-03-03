@@ -31,6 +31,11 @@
                 <div class="image">
                   <img ng-hide="{{!asset.thumbnailUrl}}" ng-src="{{asset.thumbnailUrl}}" alt="{{asset.name}}">
                 </div>
+                <div class="buttons">
+                  <button ng-hide="{{asset.isFolder}}" class="btn btn-default btn-sm">Open</button>
+                  <button ng-hide="{{asset.isFolder}}" class="btn btn-default btn-sm">Delete</button>
+                  <button ng-hide="{{asset.isFolder}}" ng-click="browser.select(asset.contentUrl)" class="btn btn-default btn-sm">Select</button>
+                </div>
               </div>
             </div>
           </div>

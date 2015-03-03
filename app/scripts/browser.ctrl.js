@@ -7,6 +7,17 @@ function BrowserController(assets) {
   var vm = this;
   vm.assets = assets;
   vm.alerts = [];
+  vm.select = select;
+
+  function select(assetUrl) {
+    console.log('select', assetUrl);
+    if (window.opener.insertImage) {
+      window.opener.insertImage(assetUrl);
+      window.close();
+    } else {
+      alert('Error: asset-select only works if the opener window defines an insertImage callback.');
+    }
+  }
 
   //activate();
   //
