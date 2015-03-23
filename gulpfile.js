@@ -61,16 +61,17 @@ gulp.task('webserver', function () {
     port: 9000,
     livereload: true,
     middleware: function (connect, o) {
-      return [proxy({
-        route: '/api/',
-        preserveHost: true,
-        hostname: 'localhost',
-        port: 4502,
-        pathname: '/api/',
-        headers: {
-          'Authorization': 'Basic YWRtaW46YWRtaW4='
-        }
-      }),
+      return [
+        proxy({
+          route: '/api/',
+          preserveHost: true,
+          hostname: 'localhost',
+          port: 4502,
+          pathname: '/api/',
+          headers: {
+            'Authorization': 'Basic YWRtaW46YWRtaW4='
+          }
+        }),
         proxy({
           route: '/api.json',
           preserveHost: true,

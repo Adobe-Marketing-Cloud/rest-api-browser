@@ -12,7 +12,7 @@
   <body ng-app="assetBrowser">
     <div ui-view="breadcrumb" >
       <ol class="breadcrumb">
-        <li ng-repeat="path in breadcrumb.paths"><a href="{{path.href}}">{{path.label}}</a></li>
+        <li ng-repeat="crumb in breadcrumb.crumbs"><a href="{{crumb.href}}">{{crumb.label}}</a></li>
       </ol>
     </div>
     <div ui-view="browser" class="panel panel-default">
@@ -24,7 +24,7 @@
                 <div class="caption">
                   <span ng-show="{{asset.isFolder}}" title="this is a folder" class="glyphicon glyphicon-folder-open" aria-hidden="true">&nbsp;</span>
                   <span ng-hide="{{asset.isFolder}}" title="this is an image" class="glyphicon glyphicon-picture" aria-hidden="true">&nbsp;</span>
-                  <a href="{{asset.path}}">
+                  <a href="{{asset.href}}">
                     {{asset.name}}
                   </a>
                 </div>

@@ -9,6 +9,9 @@ function routes($stateProvider, $urlRouterProvider) {
     .state('browser', {
       url: '/browser/{path:any}',
       resolve: {
+        breadcrumb: function resolveBreadcrumb(assetAPI, $stateParams) {
+          return assetAPI.getBreadcrumb($stateParams.path);
+        },
         assets: function resolveAssets(assetAPI, $stateParams) {
           return assetAPI.getChildAssets($stateParams.path);
         }
