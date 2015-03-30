@@ -6,6 +6,7 @@ module.exports = AssetAPIProvider;
 function AssetAPIProvider($http, $q) {
 
   var entryUrl = 'http://localhost:9000/api.json';
+  var supportedActions = ['add-asset', 'add-folder', 'delete'];
   var siren = require('./siren/siren')({
     url: entryUrl,
     http: {
@@ -15,8 +16,17 @@ function AssetAPIProvider($http, $q) {
 
   return {
     getBreadcrumb: getBreadcrumb,
-    getChildAssets: getChildAssets
+    getChildAssets: getChildAssets,
+    getActions: getActions
   };
+
+  function getActions(path) {
+    return siren.entity(path).then(function getActions(entity) {
+      return supportedActions.map(function getAction(name) {
+        return entity.action(name);
+      });
+    }).catch(failLoadEntity);
+  }
 
   function getBreadcrumb(path) {
     return siren.entity(path)
@@ -31,7 +41,8 @@ function AssetAPIProvider($http, $q) {
           current = current.parent();
         } while (current.parent());
         return breadcrumb;
-      });
+      })
+      .catch(failLoadEntity);
   }
 
   function getChildAssets(path) {
@@ -42,7 +53,8 @@ function AssetAPIProvider($http, $q) {
       })
       .then(function transformChildren(children) {
         return children.map(entity2Asset);
-      });
+      })
+      .catch(failLoadEntity);
   }
 
   function entity2Asset (entity) {
@@ -57,7 +69,15 @@ function AssetAPIProvider($http, $q) {
       parentPath: entity.parent() && entity.parent().path(),
       url: linkSelf && linkSelf.href(),
       thumbnailUrl: linkThumb && linkThumb.href(),
-      contentUrl: linkContent && linkContent.href()
+      contentUrl: linkContent && linkContent.href(),
+      actions: entity.actions()
+    };
+  }
+
+  function failLoadEntity(err) {
+    return {
+      type: 'danger',
+      msg: 'Failed to load data. The API at ' + entryUrl + ' returned "' + err.status + ' ' + err.statusText + '".'
     };
   }
 }

@@ -16,15 +16,9 @@ function Siren(config) {
       get: config.http.get
     }
   };
-}
 
-Siren.filter = {
-  named: function filterNamed(name) {
-    return function(entity) {
-      return entity.property('name') === name;
-    };
-  }
-};
+  //this._cache = {};
+}
 
 Siren.map = {
   link:  function mapLink(rel) {
@@ -42,8 +36,15 @@ Siren.prototype.entity = function entity(path) {
 
 Siren.prototype.loadEntity = function loadEntity(url, parentEntity) {
   var self = this;
+  //if (self._cache.hasOwnProperty(url)) {
+  //  var deferred = defer();
+  //  deferred.resolve(self._cache[url]);
+  //  return deferred.promise;
+  //}
   return self.config.http.get(url).then(function successLoadEntity(response) {
-    return new Entity(self, parentEntity, response.data);
+    entity = new Entity(self, parentEntity, response.data);
+    //self._cache[url] = entity;
+    return entity;
   });
 };
 
@@ -64,7 +65,9 @@ function resolvePath(siren, url, pathSegments, parentEntity) {
           ;
         } else {
           entity
-            .children(Siren.filter.named(segment))
+            .children(function filterByName(jsonEntity) {
+              return jsonEntity.properties && jsonEntity.properties.name === segment;
+            })
             .then(function descendIntoChildren(children) {
               if (children.length !== 1) {
                 throw "Expected one child called " + segment;
@@ -84,7 +87,6 @@ function resolvePath(siren, url, pathSegments, parentEntity) {
       }
     },
     function failLoadEntity(err) {
-      console.log("Failed loading entity: " + err)
       deferred.reject(err);
     }
   );

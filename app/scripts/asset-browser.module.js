@@ -3,16 +3,19 @@
 require('angular');
 require('angular-ui-router');
 require('angular-bootstrap-npm');
+require('ng-file-upload/dist/angular-file-upload');
 
 var BreadcrumbController = require('./breadcrumb.ctrl.js');
+var ActionController = require('./action.ctrl.js');
 var BrowserController = require('./browser.ctrl.js');
 var RoutingConfig = require('./routing.js');
 var AssetAPIProvider = require('./api.service.js');
 
 angular
-  .module('assetBrowser', ['ui.router', 'ui.bootstrap'])
+  .module('assetBrowser', ['ui.router', 'ui.bootstrap', 'angularFileUpload'])
   .config(RoutingConfig)
   .controller('BreadcrumbController', BreadcrumbController)
+  .controller('ActionController', ActionController)
   .controller('BrowserController', BrowserController)
   .factory('assetAPI', AssetAPIProvider)
 ;

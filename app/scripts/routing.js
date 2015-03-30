@@ -12,6 +12,9 @@ function routes($stateProvider, $urlRouterProvider) {
         breadcrumb: function resolveBreadcrumb(assetAPI, $stateParams) {
           return assetAPI.getBreadcrumb($stateParams.path);
         },
+        actions: function resolveActions(assetAPI, $stateParams) {
+          return assetAPI.getActions($stateParams.path);
+        },
         assets: function resolveAssets(assetAPI, $stateParams) {
           return assetAPI.getChildAssets($stateParams.path);
         }
@@ -20,6 +23,10 @@ function routes($stateProvider, $urlRouterProvider) {
         'breadcrumb': {
           controller: 'BreadcrumbController',
           controllerAs: 'breadcrumb'
+        },
+        'actionbar': {
+          controller: 'ActionController',
+          controllerAs: 'actionbar'
         },
         'browser': {
           controller: 'BrowserController',

@@ -5,5 +5,9 @@ module.exports = BreadcrumbController;
 /* @ngInject */
 function BreadcrumbController(breadcrumb) {
   var vm = this;
-  vm.crumbs = breadcrumb;
+  if (Array.isArray(breadcrumb)) {
+    vm.crumbs = breadcrumb;
+  } else {
+    vm.crumbs = [];
+  }
 }

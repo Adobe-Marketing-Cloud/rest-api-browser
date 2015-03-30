@@ -10,16 +10,24 @@
     <link rel="stylesheet" href="css/main.css">
   </head>
   <body ng-app="assetBrowser">
-    <div ui-view="breadcrumb" >
+    <div ui-view="breadcrumb">
       <ol class="breadcrumb">
         <li ng-repeat="crumb in breadcrumb.crumbs"><a href="{{crumb.href}}">{{crumb.label}}</a></li>
       </ol>
+    </div>
+    <div>
+      <div ui-view="actionbar" class="breadcrumb">
+        <div>
+          <button ng-repeat="action in actionbar.actions" class="btn btn-default btn-sm"ng-click="actionbar.perform(action)">{{action.title}}</button>
+        </div>
+      </div>
     </div>
     <div ui-view="browser" class="panel panel-default">
       <div class="panel-body">
         <div class="container-fluid">
           <div class="row">
-            <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3" ng-repeat="asset in browser.assets">
+            <alert ng-repeat="alert in browser.alerts" type="{{alert.type}}" close="browser.closeAlert($index)">{{alert.msg}}</alert>
+            <div ng-repeat="asset in browser.assets" class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
               <div class="thumbnail">
                 <div class="caption">
                   <span ng-show="{{asset.isFolder}}" title="this is a folder" class="glyphicon glyphicon-folder-open" aria-hidden="true">&nbsp;</span>
@@ -29,7 +37,7 @@
                   </a>
                 </div>
                 <div class="image">
-                  <img ng-hide="{{!asset.thumbnailUrl}}" ng-src="{{asset.thumbnailUrl}}" alt="{{asset.name}}">
+                  <img ng-hide="{{!asset.thumbnailUrl && !asset.contentUrl}}" ng-src="{{asset.thumbnailUrl || asset.contentUrl}}" alt="{{asset.name}}">
                 </div>
               </div>
             </div>
@@ -38,28 +46,48 @@
       </div>
     </div>
 
-    <!--
-    <nav>
-      <ul class="pagination">
-        <li>
-          <a href="#" aria-label="Previous">
-            <span aria-hidden="true">&laquo;</span>
-          </a>
-        </li>
-        <li><a href="#">1</a></li>
-        <li><a href="#">2</a></li>
-        <li><a href="#">3</a></li>
-        <li><a href="#">4</a></li>
-        <li><a href="#">5</a></li>
-        <li>
-          <a href="#" aria-label="Next">
-            <span aria-hidden="true">&raquo;</span>
-          </a>
-        </li>
-      </ul>
-    </nav>
-    -->
-
     <script src="js/asset-browser.js"></script>
+
+    <script type="text/ng-template" id="generic-form.html">
+      <div class="modal-header">
+        <h3 class="modal-title">{{action.title}}</h3>
+      </div>
+      <div class="modal-body">
+        <form name="actionForm" ng-submit="action.submit(actionForm)" novalidate>
+          <div ng-repeat="field in action.fields" class="form-group has-feedback"
+               ng-class="{'has-success': actionForm.$submitted && actionForm[field.name].$valid,
+               'has-error': actionForm.$submitted && actionForm[field.name].$invalid}">
+            <label for="id-{{field.name}}">{{field.title}}</label>
+            <input id="id-{{field.name}}" name="{{field.name}}" type="{{field.type}}" ng-model="action.form[field.name]" required class="form-control">
+            <span ng-show="actionForm[field.name].$valid" class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>
+            <span ng-show="actionForm[field.name].$invalid" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" ng-click="action.submit(actionForm)">{{action.title}}</button>
+        <button class="btn btn-default" ng-click="action.cancel()">Cancel</button>
+      </div>
+    </script>
+
+    <script type="text/ng-template" id="add-asset-form.html">
+      <div class="modal-header">
+        <h3 class="modal-title">{{action.title}}</h3>
+      </div>
+      <div class="modal-body">
+        <button ng-file-select ng-file-change="action.upload($files)">Upload files...</button>
+        <br/>
+        <br/>
+        or
+        <br/>
+        <br/>
+        <div class="dd-upload" ng-file-drop ng-file-change="action.upload($files)" ng-multiple="true" allow-dir="false" drag-over-class="dragover">
+          Drag/Drop here to upload.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-default" ng-click="action.done()">Done</button>
+      </div>
+    </script>
   </body>
 </html>

@@ -1,3 +1,4 @@
+var Action = require('./action');
 var Link = require('./link');
 var Promise = require('promise');
 
@@ -39,8 +40,8 @@ Entity.prototype.children = function children(filterFn) {
   }
 
   var self = this;
-  var entities = self.data.entities;
-  var children = entities.map(function loadChildren(jsonEntity) {
+  var entities = self.data.entities || [];
+  var children = entities.filter(filterFn || any).map(function loadChildren(jsonEntity) {
     var link = filterLinksByRel(jsonEntity.links, 'self');
     var url = link && link.href;
     if (url) {
@@ -48,9 +49,7 @@ Entity.prototype.children = function children(filterFn) {
     }
     return Promise.resolve(new Entity(self.siren, jsonEntity));
   });
-  return Promise.all(children).then(function filterChildren(children) {
-    return children.filter(filterFn || any)
-  });
+  return Promise.all(children);
 };
 
 function filterLinksByRel(links, rel) {
@@ -62,3 +61,23 @@ function filterLinksByRel(links, rel) {
   }
   return link.length === 0 ? undefined : link[0];
 }
+
+Entity.prototype.action = function getActionByName(name) {
+  var self = this;
+  var actions = self.data.actions || [];
+  var action = actions.filter(function (rawAction) {
+    return rawAction.name && rawAction.name === name;
+  }).map(function createAction(rawAction) {
+    return new Action(self.siren, self, rawAction);
+  });
+  return action.length == 0 ? null : action[0];
+};
+
+Entity.prototype.actions = function entityActions() {
+  var self = this;
+  var actions = self.data.actions || [];
+  return actions.map(function createAction(rawAction) {
+    return new Action(self.siren, self, rawAction);
+  });
+};
+
