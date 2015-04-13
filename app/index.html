@@ -15,11 +15,9 @@
         <li ng-repeat="crumb in breadcrumb.crumbs"><a href="{{crumb.href}}">{{crumb.label}}</a></li>
       </ol>
     </div>
-    <div>
-      <div ui-view="actionbar" class="breadcrumb">
-        <div>
-          <button ng-repeat="action in actionbar.actions" class="btn btn-default btn-sm"ng-click="actionbar.perform(action)">{{action.title}}</button>
-        </div>
+    <div ui-view="actionbar">
+      <div class="actionbar">
+        <button ng-repeat="action in actionbar.actions" class="btn btn-default btn-sm"ng-click="actionbar.perform(action)">{{action.title}}</button>
       </div>
     </div>
     <div ui-view="browser" class="panel panel-default">
@@ -27,6 +25,9 @@
         <div class="container-fluid">
           <div class="row">
             <alert ng-repeat="alert in browser.alerts" type="{{alert.type}}" close="browser.closeAlert($index)">{{alert.msg}}</alert>
+            <div ng-show="browser.assets.length === 0" class="no-assets">
+              <p>Currently there are no assets in this folder. You may add folders or assets via the buttons above.</p>
+            </div>
             <div ng-repeat="asset in browser.assets" class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
               <div class="thumbnail">
                 <div class="caption">

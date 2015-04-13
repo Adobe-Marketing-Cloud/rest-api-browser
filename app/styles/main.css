@@ -23,6 +23,27 @@ body {
   max-width: 100%;
 }
 
+.actionbar {
+  margin-bottom: 20px;
+}
+
+.actionbar button:first-of-type {
+  margin: 0 3px 0 0;
+}
+
+.actionbar button {
+  margin: 0 3px;
+}
+
+.no-assets {
+  color: #d0d0e0;
+  font-size: x-large;
+  text-align: center;
+  height: 100px;
+  line-height: 100px;
+  vertical-align: middle;
+}
+
 div.dd-upload {
   min-height: 100px;
   border: 3px dashed #d0d0e0;
