@@ -23,16 +23,28 @@ body {
   max-width: 100%;
 }
 
-.actionbar {
+.actions {
   margin-bottom: 20px;
 }
 
-.actionbar button:first-of-type {
+.actions button:first-of-type {
   margin: 0 3px 0 0;
 }
 
-.actionbar button {
+.actions button {
   margin: 0 3px;
+}
+
+.search {
+  margin-bottom: 20px;
+}
+
+.search .input-group-addon.glyphicon {
+  top: 0;
+}
+
+.search button:last-of-type {
+  margin: 0 0 0 3px;
 }
 
 .no-assets {

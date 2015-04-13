@@ -15,10 +15,16 @@
         <li ng-repeat="crumb in breadcrumb.crumbs"><a href="{{crumb.href}}">{{crumb.label}}</a></li>
       </ol>
     </div>
-    <div ui-view="actionbar">
-      <div class="actionbar">
-        <button ng-repeat="action in actionbar.actions" class="btn btn-default btn-sm"ng-click="actionbar.perform(action)">{{action.title}}</button>
+    <div ui-view="actionbar" class="row">
+      <div class="actions col-sm-7 col-md-8">
+        <button ng-repeat="action in actionbar.actions" class="btn btn-default" ng-click="actionbar.perform(action)">{{action.title}}</button>
       </div>
+      <form role="search" name="searchForm" class="search col-sm-5 col-md-4" ng-submit="actionbar.search(searchForm)">
+        <div class="input-group">
+          <span class="input-group-addon glyphicon glyphicon-search"></span>
+          <input ng-model="actionbar.searchquery" type="text" class="form-control" placeholder="Search...">
+        </div>
+      </form>
     </div>
     <div ui-view="browser" class="panel panel-default">
       <div class="panel-body">
@@ -33,9 +39,12 @@
                 <div class="caption">
                   <span ng-show="{{asset.isFolder}}" title="this is a folder" class="glyphicon glyphicon-folder-open" aria-hidden="true">&nbsp;</span>
                   <span ng-hide="{{asset.isFolder}}" title="this is an image" class="glyphicon glyphicon-picture" aria-hidden="true">&nbsp;</span>
-                  <a href="{{asset.href}}">
+                  <a ng-show="{{asset.isFolder}}" href="{{asset.href}}">
                     {{asset.name}}
                   </a>
+                  <span ng-hide="{{asset.isFolder}}">
+                    {{asset.name}}
+                  </span>
                 </div>
                 <div class="image">
                   <img ng-hide="{{!asset.thumbnailUrl && !asset.contentUrl}}" ng-src="{{asset.thumbnailUrl || asset.contentUrl}}" alt="{{asset.name}}">

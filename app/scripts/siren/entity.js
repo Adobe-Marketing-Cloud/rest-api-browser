@@ -34,6 +34,11 @@ Entity.prototype.path = function path() {
   return this.parent().path() + '/' + this.property('name');
 };
 
+Entity.prototype.search = function search(query) {
+  var self = this;
+  return self.siren.search(self, query);
+};
+
 Entity.prototype.children = function children(filterFn) {
   function any() {
     return true;
@@ -41,15 +46,8 @@ Entity.prototype.children = function children(filterFn) {
 
   var self = this;
   var entities = self.data.entities || [];
-  var children = entities.filter(filterFn || any).map(function loadChildren(jsonEntity) {
-    var link = filterLinksByRel(jsonEntity.links, 'self');
-    var url = link && link.href;
-    if (url) {
-      return self.siren.loadEntity(url, self);
-    }
-    return Promise.resolve(new Entity(self.siren, jsonEntity));
-  });
-  return Promise.all(children);
+  var children = entities.filter(filterFn || any);
+  return self.siren.loadAllEntities(self, children);
 };
 
 function filterLinksByRel(links, rel) {

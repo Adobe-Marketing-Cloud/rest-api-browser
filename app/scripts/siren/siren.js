@@ -16,8 +16,6 @@ function Siren(config) {
       get: config.http.get
     }
   };
-
-  //this._cache = {};
 }
 
 Siren.map = {
@@ -34,17 +32,49 @@ Siren.prototype.entity = function entity(path) {
   return resolvePath(this, this.config.url, pathSegments, null);
 };
 
+Siren.prototype.search = function search(entity, query) {
+  var self = this;
+  var q = 'SELECT [a].* FROM [dam:Asset] AS [a] WHERE CONTAINS([a].*, \'' + query + '\')';
+  var encodedQuery = encodeURIComponent(q);
+  var url = entity.link('self').href() + "?query=" + encodedQuery;
+  return self.config.http.get(url).then(
+    function successSearch(response) {
+      var entities = response.data.entities || [];
+      return self.loadAllEntities(entity, entities);
+    }
+  );
+};
+
+Siren.prototype.loadAllEntities = function loadAllEntities(parentEntity, jsonEntities) {
+  var self = this;
+  var entities = jsonEntities
+    .map(jsonEntityToUrl)
+    .map(function loadEntity(url) {
+      return self.loadEntity(url, parentEntity);
+    });
+  return Promise.all(entities);
+};
+
+function jsonEntityToUrl(jsonEntity) {
+  var link = filterLinksByRel(jsonEntity.links, 'self');
+  return link && link.href;
+}
+
+function filterLinksByRel(links, rel) {
+  var link = links.filter(function (link) {
+    return link.rel.indexOf(rel) != -1;
+  });
+  if (link.length > 1) {
+    throw "Expected only one link with rel=" + rel;
+  }
+  return link.length === 0 ? undefined : link[0];
+}
+
 Siren.prototype.loadEntity = function loadEntity(url, parentEntity) {
   var self = this;
-  //if (self._cache.hasOwnProperty(url)) {
-  //  var deferred = defer();
-  //  deferred.resolve(self._cache[url]);
-  //  return deferred.promise;
-  //}
   return self.config.http.get(url).then(
     function successLoadEntity(response) {
       entity = new Entity(self, parentEntity, response.data);
-      //self._cache[url] = entity;
       return entity;
     },
     function failLoadEntity(err) {

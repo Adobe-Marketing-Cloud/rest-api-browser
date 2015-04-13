@@ -24,6 +24,7 @@ function AssetAPIProvider($http, $state) {
   return {
     getBreadcrumb: getBreadcrumb,
     getChildAssets: getChildAssets,
+    searchAssets: searchAssets,
     getActions: getActions
   };
 
@@ -58,15 +59,27 @@ function AssetAPIProvider($http, $state) {
       .catch(failLoadEntity);
   }
 
+
   function getChildAssets(path) {
     return siren.entity(path)
       .then(function successGetChildAssets(entity) {
         return entity.children();
       })
-      .then(function transformChildren(children) {
-        return children.map(entity2Asset);
-      })
+      .then(transformEntities)
       .catch(failLoadEntity);
+  }
+
+  function searchAssets(query) {
+    return siren.entity('assets')
+      .then(function search(entity) {
+        return entity.search(query);
+      })
+      .then(transformEntities)
+      .catch(failLoadEntity);
+  }
+
+  function transformEntities(children) {
+    return children.map(entity2Asset);
   }
 
   function entity2Asset (entity) {

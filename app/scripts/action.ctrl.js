@@ -9,8 +9,9 @@ var fieldTitles = {
 };
 
 /* @ngInject */
-function ActionController(actions, $modal) {
+function ActionController(actions, $state, $stateParams, $modal) {
   var vm = this;
+  vm.searchquery = $stateParams.query || '';
   vm.actions = actions;
   vm.perform = function performAction(action) {
 
@@ -39,6 +40,10 @@ function ActionController(actions, $modal) {
     };
 
     $modal.open(actionConfigs[action.name] || genericActionConfig);
+  };
+
+  vm.search = function search(searchForm) {
+    $state.go('search', { query: vm.searchquery });
   }
 }
 
