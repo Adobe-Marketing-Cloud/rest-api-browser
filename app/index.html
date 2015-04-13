@@ -53,6 +53,7 @@
         <h3 class="modal-title">{{action.title}}</h3>
       </div>
       <div class="modal-body">
+        <div ng-show="action.message">{{action.message}}</div>
         <form name="actionForm" ng-submit="action.submit(actionForm)" novalidate>
           <div ng-repeat="field in action.fields" class="form-group has-feedback"
                ng-class="{'has-success': actionForm.$submitted && actionForm[field.name].$valid,

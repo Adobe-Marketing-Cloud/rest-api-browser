@@ -18,8 +18,26 @@ angular
   .controller('ActionController', ActionController)
   .controller('BrowserController', BrowserController)
   .factory('assetAPI', AssetAPIProvider)
+  .run(preventCachingOnReload)
 ;
 
+
+/* @ngInject */
+function preventCachingOnReload($rootScope, $http) {
+  $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+    if (toState.name === 'browser' && fromParams.path === toParams.path) {
+      $http.defaults.headers.common['Cache-Control'] = 'no-cache';
+    }
+  });
+
+  $rootScope.$on('$stateChangeError', function() {
+    delete $http.defaults.headers.common['Cache-Control'];
+  });
+
+  $rootScope.$on('$stateChangeSuccess', function() {
+    delete $http.defaults.headers.common['Cache-Control'];
+  });
+}
 
 
 

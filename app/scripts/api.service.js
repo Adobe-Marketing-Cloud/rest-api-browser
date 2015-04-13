@@ -3,10 +3,17 @@
 module.exports = AssetAPIProvider;
 
 /* @ngInject */
-function AssetAPIProvider($http, $q) {
+function AssetAPIProvider($http, $state) {
 
   var entryUrl = 'http://localhost:9000/api.json';
   var supportedActions = ['add-asset', 'add-folder', 'delete'];
+
+  var actions = {
+    'delete': {
+      message: 'Do you really want to delete this asset/folder?'
+    }
+  };
+
   var siren = require('./siren/siren')({
     url: entryUrl,
     http: {
@@ -21,11 +28,17 @@ function AssetAPIProvider($http, $q) {
   };
 
   function getActions(path) {
-    return siren.entity(path).then(function getActions(entity) {
-      return supportedActions.map(function getAction(name) {
-        return entity.action(name);
-      });
-    }).catch(failLoadEntity);
+    return siren.entity(path)
+      .then(function getActions(entity) {
+        return supportedActions.map(function getAction(name) {
+          var action = entity.action(name);
+          if (!!actions[name] && !!actions[name].message) {
+            action.message = actions[name].message;
+          }
+          return action;
+        });
+      })
+      .catch(failLoadEntity);
   }
 
   function getBreadcrumb(path) {
@@ -46,8 +59,7 @@ function AssetAPIProvider($http, $q) {
   }
 
   function getChildAssets(path) {
-    return siren
-      .entity(path)
+    return siren.entity(path)
       .then(function successGetChildAssets(entity) {
         return entity.children();
       })
@@ -75,6 +87,10 @@ function AssetAPIProvider($http, $q) {
   }
 
   function failLoadEntity(err) {
+    if (err.parentPath) {
+      $state.go('browser', { path : err.parentPath.substring(1) });
+      return {};
+    }
     return {
       type: 'danger',
       msg: 'Failed to load data. The API at ' + entryUrl + ' returned "' + err.status + ' ' + err.statusText + '".'

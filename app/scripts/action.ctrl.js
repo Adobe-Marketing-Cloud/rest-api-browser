@@ -16,7 +16,7 @@ function ActionController(actions, $modal) {
 
     function actionResolver() {
       return action;
-    };
+    }
 
     var genericActionConfig = {
       templateUrl: "generic-form.html",
@@ -43,7 +43,7 @@ function ActionController(actions, $modal) {
 }
 
 /* @ngInject */
-function AddAssetController(action, $upload, $modalInstance, $scope) {
+function AddAssetController(action, $upload, $modalInstance, $state) {
   var vm = this;
   vm.title = action.title;
 
@@ -58,12 +58,8 @@ function AddAssetController(action, $upload, $modalInstance, $scope) {
           fields: {'name': file.name},
           file: file
         })
-        //.progress(function (evt) {
-        //  var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
-        //  console.log('progress: ' + progressPercentage + '% ' + evt.config.file.name);
-        .success(function (data, status, headers, config) {
-            // TODO: generate event to trigger reload of browser
-            // $scope.$emit('');
+        .success(function reload() {
+          $state.reload();
         });
       }
     }
@@ -75,9 +71,10 @@ function AddAssetController(action, $upload, $modalInstance, $scope) {
 }
 
 /* @ngInject */
-function GenericFormController(action, $http, $modalInstance) {
+function GenericFormController(action, $http, $modalInstance, $state) {
   var vm = this;
   vm.title = action.title;
+  vm.message = action.message;
   vm.action = action;
   vm.fields = !action.fields ? [] : action.fields.map(function(field) {
     field.title = fieldTitles.hasOwnProperty(field.name) ? fieldTitles[field.name] : field.name;
@@ -102,7 +99,7 @@ function GenericFormController(action, $http, $modalInstance) {
 
     $http(req)
       .success(function actionSuccess() {
-        // TODO: generate event to trigger reload of browser
+        $state.reload();
         $modalInstance.close();
       })
       .error(function actionFailed() {

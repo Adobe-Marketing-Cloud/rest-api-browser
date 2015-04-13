@@ -3,6 +3,12 @@ body {
   padding: 1em;
 }
 
+.thumbnail .caption {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .thumbnail .image {
   height: 150px;
   padding: 6px 9px 0px 9px;

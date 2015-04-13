@@ -41,15 +41,23 @@ Siren.prototype.loadEntity = function loadEntity(url, parentEntity) {
   //  deferred.resolve(self._cache[url]);
   //  return deferred.promise;
   //}
-  return self.config.http.get(url).then(function successLoadEntity(response) {
-    entity = new Entity(self, parentEntity, response.data);
-    //self._cache[url] = entity;
-    return entity;
-  });
+  return self.config.http.get(url).then(
+    function successLoadEntity(response) {
+      entity = new Entity(self, parentEntity, response.data);
+      //self._cache[url] = entity;
+      return entity;
+    },
+    function failLoadEntity(err) {
+      console.log('failed to load entity ' + url, err);
+    }
+  );
 };
 
 function resolvePath(siren, url, pathSegments, parentEntity) {
   var deferred = defer();
+  function failLoadEntity(err) {
+    deferred.reject(err);
+  }
   siren.loadEntity(url, parentEntity).then(
     function successLoadEntity(entity) {
       if (pathSegments.length > 0) {
@@ -58,11 +66,12 @@ function resolvePath(siren, url, pathSegments, parentEntity) {
         var link = entity.link(segment);
         var apiLink = link && link.href();
         if (apiLink) {
-          resolvePath(siren, apiLink, pathSegments, entity)
-            .then(function resolveSuccess(childEntity) {
+          resolvePath(siren, apiLink, pathSegments, entity).then(
+            function resolveSuccess(childEntity) {
               deferred.resolve(childEntity);
-            })
-          ;
+            },
+            failLoadEntity
+          );
         } else {
           entity
             .children(function filterByName(jsonEntity) {
@@ -70,15 +79,19 @@ function resolvePath(siren, url, pathSegments, parentEntity) {
             })
             .then(function descendIntoChildren(children) {
               if (children.length !== 1) {
-                throw "Expected one child called " + segment;
+                deferred.reject({ msg: "Expected one child called " + segment, parentPath: entity.path()});
               }
               var link = children[0].link('self');
               var url = link && link.href();
-              resolvePath(siren, url, pathSegments, entity)
-                .then(function resolveSuccess(childEntity) {
+              resolvePath(siren, url, pathSegments, entity).then(
+                function resolveSuccess(childEntity) {
                   deferred.resolve(childEntity);
-                });
-            });
+                },
+                failLoadEntity
+              );
+            },
+            failLoadEntity
+          );
         }
 
 
@@ -86,9 +99,7 @@ function resolvePath(siren, url, pathSegments, parentEntity) {
         deferred.resolve(entity);
       }
     },
-    function failLoadEntity(err) {
-      deferred.reject(err);
-    }
+    failLoadEntity
   );
   return deferred.promise;
 }

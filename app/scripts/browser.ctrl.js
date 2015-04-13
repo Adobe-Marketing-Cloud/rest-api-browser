@@ -3,7 +3,7 @@
 module.exports = BrowserController;
 
 /* @ngInject */
-function BrowserController(assets, $scope) {
+function BrowserController(assets) {
   var vm = this;
   if (Array.isArray(assets)) {
     vm.assets = assets;
