@@ -21,8 +21,10 @@
       </div>
       <form role="search" name="searchForm" class="search col-sm-5 col-md-4" ng-submit="actionbar.search(searchForm)">
         <div class="input-group">
-          <span class="input-group-addon glyphicon glyphicon-search"></span>
-          <input ng-model="actionbar.searchquery" type="text" class="form-control" placeholder="Search...">
+          <input ng-model="actionbar.searchquery" type="search" class="form-control" placeholder="Search...">
+          <div class="input-group-btn">
+            <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+          </div>
         </div>
       </form>
     </div>
