@@ -6,12 +6,30 @@ module.exports = AssetAPIProvider;
 function AssetAPIProvider($http, $state) {
 
   var entryUrl = 'http://localhost:9000/api.json';
-  var supportedActions = ['add-asset', 'add-folder', 'delete'];
 
-  var actions = {
+  var actionConfigs = {
     'delete': {
+      icon: 'glyphicon-trash',
       message: 'Do you really want to delete this asset/folder?'
+    },
+    'preview': {
+      isSynthetic: true,
+      name: 'preview',
+      title: 'Preview',
+      icon: 'glyphicon-eye-open'
     }
+    /*,
+    'download': {
+      isSynthetic: true,
+      name: 'download',
+      title: 'Download',
+      icon: 'glyphicon-download'
+    }*/
+  };
+
+  var supportedActions = {
+    'assets/asset': ['preview', 'delete'],
+    'assets/folder': ['add-asset', 'add-folder', 'delete']
   };
 
   var siren = require('./siren/siren')({
@@ -30,15 +48,7 @@ function AssetAPIProvider($http, $state) {
 
   function getActions(path) {
     return siren.entity(path)
-      .then(function getActions(entity) {
-        return supportedActions.map(function getAction(name) {
-          var action = entity.action(name);
-          if (!!actions[name] && !!actions[name].message) {
-            action.message = actions[name].message;
-          }
-          return action;
-        });
-      })
+      .then(prepareActions)
       .catch(failLoadEntity);
   }
 
@@ -95,8 +105,60 @@ function AssetAPIProvider($http, $state) {
       url: linkSelf && linkSelf.href(),
       thumbnailUrl: linkThumb && linkThumb.href(),
       contentUrl: linkContent && linkContent.href(),
-      actions: entity.actions()
+      actions: prepareActions(entity)
     };
+  }
+
+  function prepareActions(entity) {
+    var preparedActions = createSyntheticActions(entity);
+
+    var supported = [];
+    for (var cls in supportedActions) {
+      if (supportedActions.hasOwnProperty(cls) && entity.hasClass(cls)) {
+        supported = supportedActions[cls];
+      }
+    }
+
+    supported.forEach(function(name) {
+      var action = entity.action(name);
+      if (!!action) {
+        if (!!actionConfigs[name]) {
+          action.message = actionConfigs[name].message;
+          action.icon = actionConfigs[name].icon;
+        }
+        preparedActions.push(action);
+      }
+    });
+
+    return preparedActions;
+  }
+
+  function createSyntheticActions(entity) {
+    var actions = [];
+    for (var key in actionConfigs) {
+      if (actionConfigs.hasOwnProperty(key) && actionConfigs[key].isSynthetic) {
+        var cfg = actionConfigs[key];
+        if (isSupportedAction(entity, cfg.name)) {
+          actions.push({
+            name: cfg.name,
+            title: cfg.title,
+            message: cfg.message,
+            icon: cfg.icon,
+            entity: entity
+          })
+        }
+      }
+    }
+    return actions;
+  }
+
+  function isSupportedAction(entity, action) {
+    for (var cls in supportedActions) {
+      if (supportedActions.hasOwnProperty(cls) && entity.hasClass(cls)) {
+        return supportedActions[cls].indexOf(action) != -1;
+      }
+    }
+    return false;
   }
 
   function failLoadEntity(err) {

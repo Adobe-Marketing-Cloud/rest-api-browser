@@ -23,16 +23,13 @@ body {
   max-width: 100%;
 }
 
-.actions {
+.thumbnail .actions {
+  margin: 12px;
+  text-align: center;
+}
+
+.actionbar .actions {
   margin-bottom: 20px;
-}
-
-.actions button:first-of-type {
-  margin: 0 3px 0 0;
-}
-
-.actions button {
-  margin: 0 3px;
 }
 
 .search {
@@ -68,5 +65,21 @@ div.dd-upload {
 div.dd-upload.dragover {
   border-color: #a0a0b0;
   color: #a0a0b0;
+}
+
+@media (min-width: 768px) {
+  .modal-preview .modal-dialog {
+    max-width: 85%;
+    width: auto;
+  }
+}
+
+.modal-preview .modal-content {
+  text-align: center;
+}
+
+.modal-preview .modal-dialog img {
+  max-width: 100%;
+
 }
 

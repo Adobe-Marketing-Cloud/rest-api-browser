@@ -7,6 +7,7 @@ require('ng-file-upload/dist/angular-file-upload');
 
 var BreadcrumbController = require('./breadcrumb.ctrl.js');
 var ActionController = require('./action.ctrl.js');
+var ActionDirective = require('./action.directive.js');
 var BrowserController = require('./browser.ctrl.js');
 var RoutingConfig = require('./routing.js');
 var AssetAPIProvider = require('./api.service.js');
@@ -17,6 +18,7 @@ angular
   .controller('BreadcrumbController', BreadcrumbController)
   .controller('ActionController', ActionController)
   .controller('BrowserController', BrowserController)
+  .directive('action', ActionDirective)
   .factory('assetAPI', AssetAPIProvider)
   .run(preventCachingOnReload)
 ;

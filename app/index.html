@@ -15,9 +15,9 @@
         <li ng-repeat="crumb in breadcrumb.crumbs"><a href="{{crumb.href}}">{{crumb.label}}</a></li>
       </ol>
     </div>
-    <div ui-view="actionbar" class="row">
+    <div ui-view="actionbar" class="actionbar row">
       <div class="actions col-sm-7 col-md-8">
-        <button ng-repeat="action in actionbar.actions" class="btn btn-default" ng-click="actionbar.perform(action)">{{action.title}}</button>
+        <action ng-repeat="action in actionbar.actions" action="action" execute="actionbar.perform(action)"/>
       </div>
       <form role="search" name="searchForm" class="search col-sm-5 col-md-4" ng-submit="actionbar.search(searchForm)">
         <div class="input-group">
@@ -50,6 +50,19 @@
                 </div>
                 <div class="image">
                   <img ng-hide="{{!asset.thumbnailUrl && !asset.contentUrl}}" ng-src="{{asset.thumbnailUrl || asset.contentUrl}}" alt="{{asset.name}}">
+                </div>
+                <div class="actions">
+                  <action ng-repeat="action in asset.actions" action="action" compact="true"/>
+
+
+                  <!--
+                  <button class="btn btn-default" title="Preview"><span class="glyphicon glyphicon-eye-open"></span></button>
+                  <button class="btn btn-default"><span class="glyphicon glyphicon-download"></span></button>
+                  <button class="btn btn-default"><span class="glyphicon glyphicon-trash"></span></button>
+                  -->
+                  <!--
+                  <button class="btn btn-default"><span class="glyphicon glyphicon-check"></span></button>
+                  -->
                 </div>
               </div>
             </div>
@@ -101,6 +114,10 @@
       <div class="modal-footer">
         <button class="btn btn-default" ng-click="action.done()">Done</button>
       </div>
+    </script>
+
+    <script type="text/ng-template" id="preview.html">
+      <img ng-src="{{action.previewUrl}}"/>
     </script>
   </body>
 </html>
