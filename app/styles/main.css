@@ -68,18 +68,30 @@ div.dd-upload.dragover {
 }
 
 @media (min-width: 768px) {
+  .modal-preview {
+    text-align: center;
+  }
+
   .modal-preview .modal-dialog {
     max-width: 85%;
     width: auto;
+    display: inline-block;
   }
 }
-
 .modal-preview .modal-content {
   text-align: center;
 }
 
+.modal-preview .modal-dialog .close {
+  float: none;
+  position: absolute;
+  right: 0;
+  padding: 3px 8px;
+}
+
 .modal-preview .modal-dialog img {
   max-width: 100%;
-
+  padding: 0 8px 8px;
+  margin-top: 32px;
 }
 

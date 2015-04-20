@@ -91,9 +91,7 @@ function AddAssetController(action, $upload, $modalInstance, $state) {
     }
   };
 
-  vm.done = function done() {
-    $modalInstance.dismiss();
-  }
+  vm.done = $modalInstance.dismiss;
 }
 
 /* @ngInject */
@@ -133,22 +131,14 @@ function GenericFormController(action, $http, $modalInstance, $state) {
       });
   };
 
-  vm.cancel = function cancel() {
-    $modalInstance.dismiss();
-  };
+  vm.cancel = $modalInstance.dismiss;
 }
 
-
-function PreviewController(action) {
+function PreviewController(action, $modalInstance) {
   var url = action.entity.link('content').href();
   var vm = this;
   vm.previewUrl = url;
-}
-
-function DownloadController(action) {
-  var url = action.entity.link('content').href();
-  var vm = this;
-  window.location.href = url;
+  vm.close = $modalInstance.close;
 }
 
 function jsonToFormData(object) {
