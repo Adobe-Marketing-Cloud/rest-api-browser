@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+  <meta charset="UTF-8">
+  <title>Asset on demand</title>
+</head>
+<body>
+
+<button onclick="openChooser()">Choose asset</button>
+
+<script>
+  function openChooser() {
+    window.open('http://localhost:9000/#/browser/assets/geometrixx-outdoors','asset-select','width=800,height=650,toolbar=no,left=200,top=200');
+  }
+
+  function insertImage(assetUrl) {
+    var img = document.createElement('img');
+    img.setAttribute('src', assetUrl);
+    img.setAttribute('alt', assetUrl);
+    document.body.appendChild(img);
+  }
+</script>
+</body>
+</html>

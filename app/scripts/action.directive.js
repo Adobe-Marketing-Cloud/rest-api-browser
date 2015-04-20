@@ -61,6 +61,14 @@ function DirectiveController($modal) {
         resolve: {
           action: actionResolver
         }
+      },
+      'select': {
+        template: "<span></span>",
+        controller: SelectController,
+        controllerAs: 'action',
+        resolve: {
+          action: actionResolver
+        }
       }
     };
 
@@ -139,6 +147,12 @@ function PreviewController(action, $modalInstance) {
   var vm = this;
   vm.previewUrl = url;
   vm.close = $modalInstance.close;
+}
+
+function SelectController(action) {
+  var url = action.entity.link('content').href();
+  window.opener.insertImage(url);
+  window.close();
 }
 
 function jsonToFormData(object) {

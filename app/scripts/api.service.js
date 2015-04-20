@@ -17,18 +17,18 @@ function AssetAPIProvider($http, $state) {
       name: 'preview',
       title: 'Preview',
       icon: 'glyphicon-eye-open'
-    }
-    /*,
-    'download': {
+    },
+    'select': {
       isSynthetic: true,
-      name: 'download',
-      title: 'Download',
-      icon: 'glyphicon-download'
-    }*/
+      disabled: !(window.opener && window.opener.insertImage),
+      name: 'select',
+      title: 'Select',
+      icon: 'glyphicon-check'
+    }
   };
 
   var supportedActions = {
-    'assets/asset': ['preview', 'delete'],
+    'assets/asset': ['preview', 'select', 'delete'],
     'assets/folder': ['add-asset', 'add-folder', 'delete']
   };
 
@@ -138,7 +138,7 @@ function AssetAPIProvider($http, $state) {
     for (var key in actionConfigs) {
       if (actionConfigs.hasOwnProperty(key) && actionConfigs[key].isSynthetic) {
         var cfg = actionConfigs[key];
-        if (isSupportedAction(entity, cfg.name)) {
+        if (!cfg.disabled && isSupportedAction(entity, cfg.name)) {
           actions.push({
             name: cfg.name,
             title: cfg.title,
