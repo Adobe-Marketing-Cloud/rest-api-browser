@@ -25,5 +25,13 @@ A browser should automatically open, showing `http://localhost:9000/#/browser/as
 
 The grunt server proxies the requests to the AEM instance and automatically logs in using
 the default credentials `admin:admin`.
-    
+
+## Asset Select
+
+The browser implements a mechanism to inject content urls into other applications. In
+order to use this feature, the browser needs to be opened in a new window from another
+app and a callback named `insertImage(url)` needs to be defined in the `opener` window.
+Take a look at `apps/asset-select.html` and `http://localhost:9000/asset-select.html`
+for a basic working example.
+
 [csrf-filter]: http://localhost:4502/system/console/configMgr/com.adobe.granite.csrf.impl.CSRFFilter
