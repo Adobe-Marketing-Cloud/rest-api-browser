@@ -34,6 +34,17 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <webResources>
+                        <webResource>
+                            <directory>${project.build.directory}/browser</directory>
+                        </webResource>
+                    </webResources>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
