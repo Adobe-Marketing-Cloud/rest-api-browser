@@ -19,3 +19,9 @@ insert_final_newline = true
 
 [*.md]
 trim_trailing_whitespace = false
+
+[*.java]
+indent_size = 4
+
+[pom.xml]
+indent_size = 4
