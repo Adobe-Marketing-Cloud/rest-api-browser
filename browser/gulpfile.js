@@ -24,40 +24,51 @@ var ngAnnotate = require('gulp-ng-annotate');
 var browserify = require('browserify');
 var source = require('vinyl-source-stream');
 
+var config = {
+  'jsSource': './src/main/js',
+  'jsTarget': './target/build/js',
+  'cssSource': './src/main/css',
+  'cssTarget': './target/build/css',
+  'htmlSource': './src/main/resources',
+  'htmlTarget': './target/build',
+  'bootstrapSource': './node_modules/bootstrap/dist',
+  'bootstrapTarget': './target/build/vendor'
+};
+
 gulp.task('clean', function (callback) {
-  del('./build', callback);
+  del(config['htmlTarget'], callback);
 });
 
 gulp.task('copy-html', function () {
-  return gulp.src('app/**/*.html')
+  return gulp.src(config['htmlSource'] + '/**/*.html')
     //.pipe(inject())
-    .pipe(gulp.dest('build/'))
+    .pipe(gulp.dest(config['htmlTarget']))
     .pipe(connect.reload());
 });
 
 gulp.task('copy-css', function () {
-  return gulp.src('app/styles/**/*.css')
-    .pipe(gulp.dest('build/css/'))
+  return gulp.src(config['cssSource'] + '/**/*.css')
+    .pipe(gulp.dest(config['cssTarget']))
     .pipe(connect.reload());
 });
 
 gulp.task('process-js', browserifyTask({
-    src: './app/scripts/asset-browser.module.js',
-    dest: './build/js',
+    src: config['jsSource'] + '/asset-browser.module.js',
+    dest: config['jsTarget'],
     filename: 'asset-browser.js',
     require: []
 }));
 
 gulp.task('copy-bootstrap', function () {
-  return gulp.src('./node_modules/bootstrap/dist/**/*', {
-    base: './node_modules/bootstrap/dist/'
+  return gulp.src(config['bootstrapSource'] + '/**/*', {
+    base: config['bootstrapSource']
   })
-    .pipe(gulp.dest('build/vendor/'));
+    .pipe(gulp.dest(config['bootstrapTarget']));
 });
 
 gulp.task('webserver', function () {
   connect.server({
-    root: 'build',
+    root: config['htmlTarget'],
     port: 9000,
     livereload: true,
     middleware: function (connect, o) {
@@ -88,9 +99,9 @@ gulp.task('webserver', function () {
 });
 
 gulp.task('watch', function () {
-  gulp.watch('app/**/*.html', ['copy-html']);
-  gulp.watch('app/styles/**/*.css', ['copy-css']);
-  gulp.watch('app/scripts/**/*.js', ['process-js']);
+  gulp.watch(config['htmlSource'] + '/**/*.html', ['copy-html']);
+  gulp.watch(config['cssSource'] + '/**/*.css', ['copy-css']);
+  gulp.watch(config['jsSource'] + '/**/*.js', ['process-js']);
 });
 
 gulp.task('copy', ['copy-html', 'copy-css', 'copy-bootstrap']);
