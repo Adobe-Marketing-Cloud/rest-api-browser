@@ -18,16 +18,46 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-maven-plugin</artifactId>
+                <version>9.2.10.v20150310</version>
+                <executions>
+                    <execution>
+                        <id>run-jetty</id>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <scanIntervalSeconds>1</scanIntervalSeconds>
+                        </configuration>
+                    </execution>
+                </executions>
+                <configuration>
+                    <httpConnector>
+                        <port>9000</port>
+                    </httpConnector>
+                    <stopKey/>
+                    <stopPort/>
+                </configuration>
+            </plugin>
+
+            <plugin>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
                     <execution>
                         <id>copy-browser-js</id>
                         <phase>generate-resources</phase>
                         <goals>
-                            <goal>unpack-dependencies</goal>
+                            <goal>unpack</goal>
                         </goals>
                         <configuration>
-                            <includeArtifactIds>rest-api-browser-js</includeArtifactIds>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>com.adobe.examples</groupId>
+                                    <artifactId>rest-api-browser-js</artifactId>
+                                    <version>0.0.1-SNAPSHOT</version>
+                                </artifactItem>
+                            </artifactItems>
                             <excludes>META-INF/**</excludes>
                             <outputDirectory>target/browser</outputDirectory>
                         </configuration>
@@ -50,9 +80,52 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.adobe.examples</groupId>
-            <artifactId>rest-api-browser-js</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <groupId>org.apache.oltu.oauth2</groupId>
+            <artifactId>org.apache.oltu.oauth2.client</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.oltu.oauth2</groupId>
+            <artifactId>org.apache.oltu.oauth2.common</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.4.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.7</version>
+        </dependency>
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.1.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>3.8.1</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
