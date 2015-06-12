@@ -76,6 +76,7 @@ public class ApiProxyServlet extends HttpServlet {
 
         final int status = resourceResponse.getResponseCode();
         LOG.info("Request for {}: status code {}", url, status);
+
         resp.setStatus(status);
         resp.setContentType(resourceResponse.getContentType());
 
@@ -116,7 +117,7 @@ public class ApiProxyServlet extends HttpServlet {
 
         final String redirectPath = req.getParameter("state");
         if (redirectPath != null) {
-            resp.sendRedirect(HOST + "/api" + redirectPath);
+            resp.sendRedirect(HOST + redirectPath);
         }
     }
 
@@ -130,11 +131,14 @@ public class ApiProxyServlet extends HttpServlet {
             .setRedirectURI(HOST + req.getContextPath() + OAUTH_CALLBACK)
             .setScope(OAUTH_SCOPE)
             .setResponseType(ResponseType.CODE.toString())
-            .setState(getUrlSuffix(req))
+            .setState(req.getContextPath().length() == 0 ? "/" : req.getContextPath())
             .buildQueryMessage();
 
         LOG.info("Redirecting to {}", request.getLocationUri());
-        resp.sendRedirect(request.getLocationUri());
+        resp.setStatus(401);
+        resp.setCharacterEncoding("UTF-8");
+        resp.setContentType("application/json");
+        resp.getWriter().append("{\"redirect\":\"" + request.getLocationUri() + "\"}");
     }
 
     public String getUrlSuffix(HttpServletRequest req) {

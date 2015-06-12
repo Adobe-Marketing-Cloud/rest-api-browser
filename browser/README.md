@@ -1,4 +1,4 @@
-# REST API Asset Browse
+# REST API Asset Browser
 
 An asset browser based on the REST API at /api.json
 

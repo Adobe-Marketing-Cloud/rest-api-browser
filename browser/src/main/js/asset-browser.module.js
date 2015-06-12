@@ -15,6 +15,7 @@ var AssetAPIProvider = require('./api.service.js');
 angular
   .module('assetBrowser', ['ui.router', 'ui.bootstrap', 'angularFileUpload'])
   .config(RoutingConfig)
+  .config(OAuthInterceptor)
   .controller('BreadcrumbController', BreadcrumbController)
   .controller('ActionController', ActionController)
   .controller('BrowserController', BrowserController)
@@ -23,6 +24,29 @@ angular
   .run(preventCachingOnReload)
 ;
 
+/* @ngInject */
+function OAuthInterceptor($httpProvider) {
+  $httpProvider.interceptors.push(function($q) {
+    return {
+      'responseError': function(response) {
+        // XHR automatically follows redirects (3xx status codes and Location header)
+        // and thus does not allow us to surface the OAuth redirect from XHR to the
+        // user.
+        // So to work around this issue, the java webapp returns a status 401 with a
+        // json body specifying the reidrect instead.
+        if (response.status == 401) {
+          if (response.data && response.data.redirect) {
+            var redirect = response.data.redirect;
+            console.log('surfacing redirect to ', redirect);
+            window.location.href = redirect;
+            return $q.reject('External redirect');
+          }
+        }
+        return $q.reject(response);
+      }
+    };
+  });
+}
 
 /* @ngInject */
 function preventCachingOnReload($rootScope, $http) {
