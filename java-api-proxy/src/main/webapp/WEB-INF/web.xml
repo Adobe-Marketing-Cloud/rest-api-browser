@@ -18,11 +18,11 @@
     </init-param>
     <init-param>
       <param-name>clientId</param-name>
-      <param-value>oih671jdb3gkidtrdjashpnnil-ervenh4w</param-value>
+      <param-value>needs-to-be-set</param-value>
     </init-param>
     <init-param>
       <param-name>clientSecret</param-name>
-      <param-value>rplv5g4prjv4gs6b5uusqnukl6</param-value>
+      <param-value>needs-to-be-set</param-value>
     </init-param>
     <init-param>
       <param-name>apiUrlPrefix</param-name>

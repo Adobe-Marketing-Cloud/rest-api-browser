@@ -7,6 +7,10 @@ Start an AEM 6.1 instance at `http://localhost:4502`
 Once startup completes, add `/content/dam` to the allowed scopes of the
 [OAuth Resource Server][resource-server].
 
+Also [Adobe Granite OAuth Server Authentication Handler][oauth-login-module] needs to
+be configured. In AEM 6.1 its rank collides with another LoginModule. Setting the rank
+to 1100 works.
+
 Then the Oauth API Proxy application needs to be registered with AEM. This is
 achieved by [creating a new OAuth client][oauth-clients]. Enter the Client ID
 `OAuth API Proxy` and the redirect URL `http://localhost:9000/api/oauth/callback`.
