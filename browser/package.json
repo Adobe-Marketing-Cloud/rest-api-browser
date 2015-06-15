@@ -25,7 +25,7 @@
   },
   "scripts": {
     "build": "node node_modules/gulp/bin/gulp.js build",
-    "serve": "node node_modules/gulp/bin/gulp.js serve",
+    "server": "node node_modules/gulp/bin/gulp.js serve",
     "gulp": "node node_modules/gulp/bin/gulp.js"
   }
 }

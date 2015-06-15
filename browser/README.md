@@ -18,8 +18,8 @@ Run the following commands:
     # install all required dependencies
     npm install
     
-    # run the app on a gulp's built-in server
-    npm run serve
+    # run the app on gulp's built-in server
+    npm run server
     
 A browser should automatically open, showing `http://localhost:9000/#/browser/assets`
 
